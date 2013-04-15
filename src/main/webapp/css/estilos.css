@@ -1,0 +1,585 @@
+@charset "utf-8";
+/* neutralize browser spacing for vertical elements
+	we could do more elements, but this gives us the 
+	most widely used block level elements so that we
+	control main element spacing without having to 
+	add margins back for every block element */
+	
+/*h1, h2, h3, h4, h5, h6, p, pre,
+blockquote, ul, ol, dl, address {
+	margin: 1em 0;
+	padding: 0;
+	}*/
+body {
+/*background:#ECECEC;*/
+/*margin: 0px;    *//*margin:1px 40px 0px 40px; color:#666; line-height:1.3em;*/
+/*font-family:'Century Gothic', Helvetica, Arial, clean, sans-serif;*/
+    margin: 0 auto;
+    padding: 0;
+	background-color: #FFF;
+
+    /*margin: 0 auto;
+    padding: 0;
+	background-color: #BCBFB5;
+	background-image: url('../images/Page-BgTexture.jpg');
+	background-repeat: repeat;
+	background-attachment: scroll;
+	background-position: top left;
+    font: 10px Verdana, sans-serif;*/
+
+}
+#imgMainCont {
+	height: 365px;
+	width: 508px;
+	background: url(../_imagenes/inicioContent.png) no-repeat;
+	clear: both;
+	margin: 2em auto;
+	padding: 4px;
+}
+
+
+
+#contenedor {
+	/*margin: 0px auto;
+	width: 90%;
+	background: #FFF;*/
+
+    width: 65%;
+    clear: both;
+    margin-right: auto;
+    margin-left: 20px;
+    background-attachment: fixed;
+    background-color: #FFF;
+    background-repeat: repeat-x;
+    background-position: left bottom;
+
+}
+.textImgIndex {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	line-height: 1.2;
+	color: #000;
+	text-align: left;
+	font-weight: normal;
+}
+.textContaVisit {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: .8em;
+	line-height: 1.2;
+	color: #000;
+	text-align: center;
+	font-weight: normal;
+}
+
+
+
+
+#header {
+	/*align: center;*/
+	/*height: 75px;*/
+	/*background: #D7D7D7;*/
+    /*align: center;
+	height: 75px;
+	width: auto;
+	background-color: #FFF;
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	margin-top: 20px;*/
+
+    align: center;
+    height: 75px;
+    width: 900px;
+    background-color: #010167;
+    margin-right: auto;
+    margin-left: auto;
+    clear: both;
+    margin-top: 20px;
+    padding: 0px;
+
+}
+#subHeader {
+	height: 140px;
+	background: #ccc;
+}
+
+
+#mainContent {
+	
+	height: auto;
+	width: 900px;
+    margin: 20px auto 3em auto;
+    background-attachment: scroll;
+    background-color: #FFF;
+    background-image: url(../img/contene_bg.jpg);
+    background-repeat: repeat-x;
+    background-position: left bottom;
+    
+
+}
+
+#mainContentD {
+	
+	height: auto;
+	width: 530px;
+	margin: 20px auto 3em 20px;
+	float: left;
+}
+
+#rightSbar {
+	
+	height: auto;
+	width: 280px;
+	padding-bottom: 3em;
+}
+#rightSbarContenedor {
+	background: #CDDDEF;
+	padding-bottom: 2.2em;
+	padding-top: 40px;
+}
+#rightSbarAPP {
+	width: 240px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-top: 30px;
+}
+
+
+
+
+#footer {
+	/*background: #B0B0B0;*/
+	/*font-family: Arial,Helvetica,sans-serif;
+    font-size: 0.8em;
+    line-height: 1em;
+    font-weight: normal;
+    color: #333333;*/
+    font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	line-height: 1em;
+	font-weight: normal;
+	/*color: #00F;*/
+	/*background-color: #C4C5C7;*/
+	height: 30px;
+	width: auto;
+	text-align: right;
+}
+
+#footer #footerTop {
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 0.8em;
+	color: #000;
+	text-decoration: none;
+	text-align: center;
+	clear: both;
+	width: 90%;
+	margin-right: auto;
+	margin-left: auto;
+	font-weight: normal;
+	text-shadow:1px 1px 1px #FFF;
+	padding-top: 37px;
+}
+
+#footer #footerBottom {
+	float: right;
+	height: 19px;
+	width: 90%;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	color: #FFF;
+	text-align: right;
+	padding-right: 25px;
+	text-decoration: none;
+	margin-top: 11px;
+}
+
+
+
+#enlaces {
+	clear: both;
+	width: 860px;
+	margin-right: auto;
+	margin-left: auto;
+	height: auto;
+	padding-top: 5px;
+	border: 1px solid #066;
+}
+#enlaces #links  {
+	padding: 10px 0px;
+	width: 860px;
+	margin-right: auto;
+	margin-left: auto;
+	height: 42px;
+}
+.espacEnlaces {
+	padding-left: 13px;
+	clip: rect(auto,auto,auto,auto);
+	border-top: 0;
+	border-right: 0;
+	border-bottom: 0;
+	border-left: 0;
+}
+
+
+#sideBanner {
+	background: #CCC;
+	width: 240px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: 40px;
+	height: 400px;
+}
+#mainContent .mainContList  {
+	align: center;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 0.9em;
+	line-height: 1.4;
+	color: #000;
+}
+
+#rightSContent {
+	width: 240px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: 25px;
+}
+#rightSbar #rightSContent #indContent {
+
+}
+#rightSbar #rightSContent #indTitle {
+}
+#rightSbar #rightSContent #indContent table  {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 0.9em;
+	color: #000;
+}
+.tablaAlignDer {
+	text-align: right;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-right: 6px;
+	font-size: 1em;
+	font-weight: bold;
+}
+.tablaAlignIzq {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-left: 6px;
+	text-align: left;
+	font-weight: normal;
+	font-size: 1em;
+}
+
+h1 {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.8em;
+	font-weight: normal;
+	color: #000000;
+	text-align: center;
+	line-height: 1.3;
+	margin-bottom: 2em;
+	padding: .1em 0.5em;
+}
+.logo_avenseg {
+	margin-left: 200px;
+	margin-bottom: 20px;
+	margin-top: -30px;
+}
+
+h2 {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.4em;
+	font-weight: normal;
+	color: #F90;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	padding-left: 0.2em;
+	border-bottom: 2px solid #666;
+	margin-bottom: 1em;
+	margin-top: 2em;
+}
+h3 {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	font-size: 1em;
+	line-height: 1.2;
+	color: #2A8E0A;
+	text-align: left;
+	margin: 0px;
+	padding: 0px;
+}
+h4 {
+}
+p {
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 0.9em;
+	line-height: 1.4;
+	text-align: left;
+}
+#mainContent #fundadores {
+	background: #eee;
+	margin: 2.5em auto;
+	clear: both;
+	height: auto;
+	width: 300px;
+	padding-top: .2em;
+	padding-bottom: 1em;
+}
+#mainContent #galeria {
+	width: 530px;
+	clear: both;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	line-height: 1.2;
+	color: #999;
+	padding-top: 1em;
+	padding-bottom: 2em;
+	margin: 2em auto;
+	border: 1px solid #006632;
+}
+#mainContent #galeria #fotos {
+	margin-top: 1em;
+	margin-right: 1em;
+	margin-left: 1.5em;
+}
+#mainContent #galeria #fotos .espImgs {
+	border: 0;
+	margin: .6em;
+}
+#btnEnviar {
+	padding-left: 23em;
+	float: left;
+	margin-bottom: 2em;
+}
+#contContacto {
+	float: left;
+	width: 530px;
+}
+#fundaSbar {
+	clear: both;
+	width: 240px;
+	margin-right: auto;
+	margin-left: auto;
+	color: #FFF;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 0.8em;
+	line-height: 1.4;
+	text-shadow:1px 1px 1px #000;
+}
+#rightSbar #fundaSbar .eye {
+	float: right;
+}
+#tablaNormas {
+	width: 500px;
+	margin-right: auto;
+	margin-left: auto;
+	text-align: left;
+}
+#tablaEstatutoyReglamentos {
+	width: 500px;
+	margin-right: auto;
+	margin-left: auto;
+	text-align: left;
+}
+
+.tablaNormasAlignIzq {
+	padding-top: 6px;
+	padding-bottom: 6px;
+	padding-left: 8px;
+	text-align: left;
+	font-weight: normal;
+	font-size: .8em;
+	line-height: 1.5;
+	font-family: Verdana, Geneva, sans-serif;
+}
+.tabCenter {
+	margin-right: auto;
+	margin-left: auto;
+}
+
+
+
+.tablaNormasAlignDer {
+	border-width: 0px;
+	padding: 4px 1em;
+}
+
+.titleTablaNormas {
+	color: #FFF;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 6px;
+	background-color: #F90;
+}
+.juntasTabTitCen {
+	text-align: center;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: .9em;
+	color: #000;
+	padding: 6px 8px;
+	line-height: 1.2;
+}
+
+
+.juntasTablaCentro {
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 0.8em;
+	line-height: 1.5;
+	color: #000;
+	font-weight: normal;
+	padding-left: 10px;
+}
+.TabPlanPensTitCen {
+	text-align: center;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 0.8em;
+	color: #000;
+	padding: 6px 8px;
+	line-height: 1.2;
+	font-weight: bold;
+}
+.TabPlanPens {
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 0.7em;
+	line-height: 1.5;
+	color: #000;
+	font-weight: normal;
+	text-align: center;
+}
+
+
+a.footerLink:link {
+	color:#B3DE26;
+	text-decoration: none;
+	text-shadow:none;
+}
+
+a.footerLink:visited {
+	color:#B3DE26;
+	text-decoration: none;
+	text-shadow:none;
+}
+
+a.footerLink:hover {
+	color:#C1272D;
+	text-decoration: none;
+}
+
+a.Links_1:link {
+	color:#00632E;
+	text-decoration: none;
+	text-shadow:none;
+}
+
+a.Links_1:visited {
+	color:#00632E;
+	text-decoration: none;
+	text-shadow:none;
+}
+
+a.Links_1:hover {
+	color:#C1272D;
+	text-decoration: none;
+}
+#conta_visitas {
+	text-align: center;
+	height: 60px;
+	width: 200px;
+	margin-right: auto;
+	margin-left: auto;
+}
+#cont_avanseg {
+}
+#cont_avanseg p {
+	font-size: .8em;
+	font-weight: normal;
+	text-align: left;
+	padding-top: 10px;
+	padding-right: 20px;
+	padding-bottom: 10px;
+	padding-left: 20px;
+	line-height: 1.2em;
+}
+#contVideo {
+	height: 400px;
+	width: 508px;
+	padding: 4px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: 40px;
+}
+.videoCenter {
+	margin-left: 60px;
+	margin-top: 25px;
+	position: absolute;
+	float: left;
+	margin-bottom: 30px;
+}
+
+td{
+    font: 11px Verdana, sans-serif;
+}
+
+
+.myTh{
+    color: #448;
+    font: bold 12px Verdana, sans-serif;
+    background: #DDE;
+    /*border-color: #227;*/
+    border: 1px solid #778;
+}
+
+.cellBorder{
+    border: 1px solid #778;
+}
+
+
+.tablaZebra1{
+    /*background-color:#c0ff99;*/
+    background-color: #e8e8fc;
+    font: 11px Verdana, sans-serif;
+    /*background-color:#edffe8;*/
+    color:black;
+    border: 1px solid #778;
+}
+
+.tablaZebra2{
+    background-color:whitesmoke;
+    font: 11px Verdana, sans-serif;
+    color:black;
+    border: 1px solid #778;
+}
+
+.esquinasRedondas {
+	border: 1px solid #999;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-khtml-border-radius: 10px;
+	border-radius: 10px;
+}
+
+.esquinasRedondas2 {
+	border: 1px solid black;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-khtml-border-radius: 10px;
+	border-radius: 10px;
+}
+
+
+/*UPLOAD*/
+
+#progressBarText {
+    font-family: Verdana, Geneva, sans-serif;
+    color:green;
+}
+#progressBar { padding-top: 5px; }
+#progressBarBox { width: 150px; height: 20px; border: 1px inset; background: #eee;}
+#progressBarBoxContent { width: 0; height: 20px; border-right: 1px solid #444; background: #9ACB34; }
+
+
+
+.logos_header_cent {
+	/*text-align: center;*/
+    text-align: left;
+}
