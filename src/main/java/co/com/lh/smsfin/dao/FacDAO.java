@@ -493,6 +493,7 @@ public class FacDAO extends HibernateDaoSupport{
         }
     }
 
+
     /**
      * crea cliente en POS segun los Funcionarios FAC
      */
