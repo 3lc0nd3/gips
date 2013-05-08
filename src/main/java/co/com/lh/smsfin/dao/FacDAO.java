@@ -546,6 +546,7 @@ public class FacDAO extends HibernateDaoSupport{
         PhpposAppConfigEntity appConfig = getAppConfig("id_pos");
         if (appConfig != null){
             int idPos = Integer.parseInt(appConfig.getValue());
+			logger.info("idPos = " + idPos);
             List<PosListaPrecio> listaPrecios = facOracleDAO.getListaPrecios(idPos);
             logger.info("listaPrecios = " + listaPrecios.size());
             for (PosListaPrecio itemOracle : listaPrecios) {

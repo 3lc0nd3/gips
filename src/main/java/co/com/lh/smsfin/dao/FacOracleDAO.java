@@ -102,6 +102,7 @@ public class FacOracleDAO extends HibernateDaoSupport {
      * @return lista
      */
     public List<PosListaPrecio> getListaPrecios(int posID){
+		logger.info("posID = " + posID);
         return getHibernateTemplate().find("from PosListaPrecio where pcaPosId = ?", posID);
     }
 
