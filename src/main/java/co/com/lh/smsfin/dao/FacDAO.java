@@ -572,6 +572,10 @@ public class FacDAO extends HibernateDaoSupport{
     public void saveLogEntrada(PosListaPrecio itemOracle,
                                String tipo,
                                int idPos){
+		logger.info("itemOracle.getPcaIdElemento() = " + itemOracle.getPcaIdElemento());
+		logger.info("idPos = " + idPos);
+		logger.info("tipo = " + tipo);
+
 		try {
 			PhpposLogEntrada logEntrada = new PhpposLogEntrada();
 			logEntrada.setFechaCreacion(new java.sql.Timestamp(System.currentTimeMillis()));
