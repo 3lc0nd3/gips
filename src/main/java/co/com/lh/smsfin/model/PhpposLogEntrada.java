@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  * Time: 12:07:55 PM
  */
 @Entity
-@Table(catalog = "gipos", name = "phppos_log_entrada")
+@Table(name = "phppos_log_entrada")
 public class PhpposLogEntrada {
     private int id;
 
