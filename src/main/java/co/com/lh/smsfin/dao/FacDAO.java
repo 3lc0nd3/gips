@@ -146,7 +146,7 @@ public class FacDAO extends HibernateDaoSupport{
 
 			Integer idPeople1;
 			// PREGUNTO SI EXISTE EN PEOPLE
-			if (peopleEntity==null) {  // SI EXISTE EN PEOPLE
+			if (peopleEntity==null) {  // NO EXISTE EN PEOPLE, TOCA CREARLO
 				peopleEntity = new PhpposPeopleEntity();
 
 				String nombre= "";
