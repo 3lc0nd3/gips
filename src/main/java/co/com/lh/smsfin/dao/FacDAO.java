@@ -82,7 +82,18 @@ public class FacDAO extends HibernateDaoSupport{
         return (PhpposPeopleEntity) getHibernateTemplate().get(PhpposPeopleEntity.class, idPeople);
     }
 
-    /**
+	public PhpposPeopleEntity getPeopleEntityFromCedula(long cedula){
+		List<PhpposPeopleEntity> peopleEntities = getHibernateTemplate().find(
+				"from PhpposPeopleEntity where zip = ? ", String.valueOf(cedula)
+		);
+		if (peopleEntities.size()>0) {
+			return peopleEntities.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	/**
      * Trae People segun la Cedula de un cliente
      * @param cedula c
      * @return people
@@ -126,54 +137,63 @@ public class FacDAO extends HibernateDaoSupport{
      * @param funcionario VIENE DE ORACLE
      */
     public void saveNewCustomer(final VPosFuncionarios funcionario){
-        if (getPhpposCustomersEntityFromCedula(funcionario.getFunCedula()) == null) { // EL FUNCIONARIO NO EXISTE EN EL POS
+		//  TOCA MIRAR SI EXISTE EN PEOPLE Y EN CUSTOMERS
 
-            PhpposPeopleEntity peopleEntity = new PhpposPeopleEntity();
+		PhpposPeopleEntity peopleEntity = getPeopleEntityFromCedula(funcionario.getFunCedula());
 
-            String nombre= "";
-            if (funcionario.getFunGrado()!= null){
-                nombre+=funcionario.getFunGrado()+" ";
-            }
-            if (funcionario.getFunApellidos()!= null){
-                nombre+=funcionario.getFunApellidos();
-            }
-            peopleEntity.setFirstName(nombre);
-            peopleEntity.setLastName(funcionario.getFunNombres()==null?"":funcionario.getFunNombres());
-            peopleEntity.setPhoneNumber(" ");
-            peopleEntity.setEmail(" ");
-            peopleEntity.setAddress1(" ");
-            peopleEntity.setAddress2(" ");
-            peopleEntity.setCity(" ");
-            peopleEntity.setState(" ");
-            peopleEntity.setZip(String.valueOf(funcionario.getFunCedula()));
-            peopleEntity.setCountry(" ");
-            peopleEntity.setComments(" ");
 
-            // CREO EL PEOPLE EN EL POS
-            final Integer idPeople = (Integer) getHibernateTemplate().save(peopleEntity);
+		if (getPhpposCustomersEntityFromCedula(funcionario.getFunCedula()) == null) { // EL FUNCIONARIO NO EXISTE EN CUSTOMER
 
-            logger.info("");
-            logger.info(" ===== FUNCIONARIO CREADO ============================== ");
-            logger.info("idPeople = " + idPeople);
-            logger.info("funcionario.getFunCedula() = " + funcionario.getFunCedula());
-            logger.info("funcionario.getFunNombres() = " + funcionario.getFunNombres());
-            logger.info("funcionario.getFunApellidos() = " + funcionario.getFunApellidos());
-            logger.info(" ======================================================= ");
-            logger.info("");
+			Integer idPeople1;
+			// PREGUNTO SI EXISTE EN PEOPLE
+			if (peopleEntity==null) {  // SI EXISTE EN PEOPLE
+				peopleEntity = new PhpposPeopleEntity();
+
+				String nombre= "";
+				if (funcionario.getFunGrado()!= null){
+					nombre+=funcionario.getFunGrado()+" ";
+				}
+				if (funcionario.getFunApellidos()!= null){
+					nombre+=funcionario.getFunApellidos();
+				}
+				peopleEntity.setFirstName(nombre);
+				peopleEntity.setLastName(funcionario.getFunNombres()==null?"":funcionario.getFunNombres());
+				peopleEntity.setPhoneNumber(" ");
+				peopleEntity.setEmail(" ");
+				peopleEntity.setAddress1(" ");
+				peopleEntity.setAddress2(" ");
+				peopleEntity.setCity(" ");
+				peopleEntity.setState(" ");
+				peopleEntity.setZip(String.valueOf(funcionario.getFunCedula()));
+				peopleEntity.setCountry(" ");
+				peopleEntity.setComments(" ");
+
+				// CREO EL PEOPLE EN EL POS
+				idPeople1 = (Integer) getHibernateTemplate().save(peopleEntity);
+
+				logger.info("");
+				logger.info(" ===== FUNCIONARIO CREADO ============================== ");
+				logger.info("idPeople = " + idPeople);
+				logger.info("funcionario.getFunCedula() = " + funcionario.getFunCedula());
+				logger.info("funcionario.getFunNombres() = " + funcionario.getFunNombres());
+				logger.info("funcionario.getFunApellidos() = " + funcionario.getFunApellidos());
+				logger.info(" ======================================================= ");
+				logger.info("");
+			} else {
+				idPeople1 = peopleEntity.getPersonId();
+				logger.info("");
+				logger.info(" ===== FUNCIONARIO YA EXISTIA  ========================= ");
+				logger.info("idPeople = " + idPeople);
+				logger.info("funcionario.getFunCedula() = " + funcionario.getFunCedula());
+				logger.info("funcionario.getFunNombres() = " + funcionario.getFunNombres());
+				logger.info("funcionario.getFunApellidos() = " + funcionario.getFunApellidos());
+				logger.info(" ======================================================= ");
+				logger.info("");
+			}
+
+			final Integer idPeople = idPeople1;
 
             // JOIN CON LA TABLA FUNCIONARIO DE SINFAD
-
-
-            /*PhpposAppConfigEntity appConfig = getAppConfig("id_pos");
-            if (appConfig != null) {
-                PosFuncEstado posFuncEstado = facOracleDAO.getPosFuncEstado(
-                        Integer.parseInt(appConfig.getValue()),
-                        funcionario.getFunCedula());
-
-                posFuncEstado.setFesIdFuncionario(idPeople);
-                posFuncEstado.setFesEstado("A");
-                facOracleDAO.getHibernateTemplate().update(posFuncEstado); // se usa el facOracleDao
-            }*/
 
             facOracleDAO.getHibernateTemplate().execute(new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException, SQLException {
