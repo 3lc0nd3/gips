@@ -173,7 +173,7 @@ public class FacDAO extends HibernateDaoSupport{
 
 				logger.info("");
 				logger.info(" ===== FUNCIONARIO CREADO ============================== ");
-				logger.info("idPeople = " + idPeople);
+				logger.info("idPeople = " + idPeople1);
 				logger.info("funcionario.getFunCedula() = " + funcionario.getFunCedula());
 				logger.info("funcionario.getFunNombres() = " + funcionario.getFunNombres());
 				logger.info("funcionario.getFunApellidos() = " + funcionario.getFunApellidos());
@@ -183,7 +183,7 @@ public class FacDAO extends HibernateDaoSupport{
 				idPeople1 = peopleEntity.getPersonId();
 				logger.info("");
 				logger.info(" ===== FUNCIONARIO YA EXISTIA  ========================= ");
-				logger.info("idPeople = " + idPeople);
+				logger.info("idPeople = " + idPeople1);
 				logger.info("funcionario.getFunCedula() = " + funcionario.getFunCedula());
 				logger.info("funcionario.getFunNombres() = " + funcionario.getFunNombres());
 				logger.info("funcionario.getFunApellidos() = " + funcionario.getFunApellidos());
