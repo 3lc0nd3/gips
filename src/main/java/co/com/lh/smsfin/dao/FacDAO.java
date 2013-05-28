@@ -197,11 +197,23 @@ public class FacDAO extends HibernateDaoSupport{
             customersEntity.setPersonId(idPeople);
             customersEntity.setTaxable(0);
             customersEntity.setAccountNumber(String.valueOf(funcionario.getFunCedula()));
-            customersEntity.setPass(getMD5(String.valueOf(funcionario.getFunClave())));
-            customersEntity.setLevel_debt(funcionario.getFunEndeudamiento());
-            customersEntity.setDebt(funcionario.getFunConsumoUltimoMes());
+			if (funcionario.getFunClave() != null && !funcionario.getFunClave().equals("")) {
+				customersEntity.setPass(getMD5(String.valueOf(funcionario.getFunClave())));
+			} else {
+				customersEntity.setPass("");
+			}
+			if (funcionario.getFunEndeudamiento()!=null) {
+				customersEntity.setLevel_debt(funcionario.getFunEndeudamiento());
+			} else {
+				customersEntity.setLevel_debt(0);
+			}
+			if (funcionario.getFunConsumoUltimoMes() != null) {
+				customersEntity.setDebt(funcionario.getFunConsumoUltimoMes());
+			} else {
+				customersEntity.setDebt(0);
+			}
 
-            getHibernateTemplate().save(customersEntity);
+			getHibernateTemplate().save(customersEntity);
 
         }  // END IF EXISTE FUNCIONARIO EN POS
     }
