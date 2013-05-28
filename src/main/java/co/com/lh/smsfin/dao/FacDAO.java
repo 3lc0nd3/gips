@@ -540,16 +540,26 @@ public class FacDAO extends HibernateDaoSupport{
     public void saveLogEntrada(PosListaPrecio itemOracle,
                                String tipo,
                                int idPos){
-        PhpposLogEntrada logEntrada = new PhpposLogEntrada();
-        logEntrada.setFechaCreacion(new java.sql.Timestamp(System.currentTimeMillis()));
-        logEntrada.setTipo(tipo);
-        logEntrada.setIdPos(idPos);
-        logEntrada.setIdElemento(itemOracle.getPcaIdElemento());
-        logEntrada.setFecha(Integer.parseInt(f.format(new java.util.Date())));
-        logEntrada.setHora(Integer.parseInt(h.format(new java.util.Date())));
-        logEntrada.setCantidad(itemOracle.getPcaCantidad());
-        getHibernateTemplate().save(logEntrada);
-    }
+		try {
+			PhpposLogEntrada logEntrada = new PhpposLogEntrada();
+			logEntrada.setFechaCreacion(new java.sql.Timestamp(System.currentTimeMillis()));
+			logEntrada.setTipo(tipo);
+			logEntrada.setIdPos(idPos);
+			logEntrada.setIdElemento(itemOracle.getPcaIdElemento());
+			logEntrada.setFecha(Integer.parseInt(f.format(new java.util.Date())));
+			logEntrada.setHora(Integer.parseInt(h.format(new java.util.Date())));
+			logEntrada.setCantidad(itemOracle.getPcaCantidad());
+			getHibernateTemplate().save(logEntrada);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();  
+		} catch (DataAccessException e) {
+			e.printStackTrace();  
+		} catch (HibernateException e){
+			e.printStackTrace();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
 
     public void sincronizaArticulos(){
 		// TRAIGO EL ID POS
