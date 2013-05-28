@@ -122,8 +122,8 @@ public class FacDAO extends HibernateDaoSupport{
     }
 
     /**
-     *
-     * @param funcionario f
+     * Crea un PhpposCustomersEntity en MySQL segun los datos de ORACLE
+     * @param funcionario VIENE DE ORACLE
      */
     public void saveNewCustomer(final VPosFuncionarios funcionario){
         if (getPhpposCustomersEntityFromCedula(funcionario.getFunCedula()) == null) { // EL FUNCIONARIO NO EXISTE EN EL POS
@@ -206,17 +206,19 @@ public class FacDAO extends HibernateDaoSupport{
         }  // END IF EXISTE FUNCIONARIO EN POS
     }
 
-    /**
-     * actualiza cliente
-     * <br> si el cliente ha sido desactivado, lo vuelve a a activar
-     * @param funcionario f
-     */
+	/**
+	 * actualiza cliente
+	 * <br> si el cliente ha sido desactivado, lo vuelve a a activar
+	 *
+	 * @param funcionario QUE VIENE DE ORACLE
+	 */
     public void updateCustomer(VPosFuncionarios funcionario){
-
+//		TRAIGO UNA PEOPLE SEGUN LA CEDULA
         PhpposPeopleEntity peopleEntity = getPhpposCustomersEntityFromCedula(funcionario.getFunCedula());
         if (peopleEntity == null){ // NO HAY CUSTOMER: POR 'I'
+//			PREGUNTO SI EN ORACLE HAY UN ID_PEOPLE EN USO PARA ESTA CEDULA
             PosFuncEstado posFuncEstado = facOracleDAO.getPosFuncEstado(getIdPos(), funcionario.getFunCedula());
-            if (posFuncEstado.getFesIdFuncionario() != null) {
+            if (posFuncEstado.getFesIdFuncionario() != null) { // SI EXISTIA
                 peopleEntity = getPeopleEntity(posFuncEstado.getFesIdFuncionario());
             } 
         }
@@ -240,8 +242,11 @@ public class FacDAO extends HibernateDaoSupport{
 			logger.info(" ====  PEOPLE ENTITY NULO. NO SE PUDO ENCONTAR EN LOCAL  ======= ");
 			logger.info(" ====  SE CREARA UNO NUEVO  ==================================== ");
 			logger.info(" =============================================================== ");
+
+			// HAGO DE CUENTA QUE VIENE EN ESTADO N
 			saveNewCustomer(funcionario);
 		} else {
+//			NO ES NULO EL PEOPLE
 			peopleEntity.setFirstName(nombre);
 			peopleEntity.setLastName(funcionario.getFunNombres()==null?"":funcionario.getFunNombres());
 
@@ -259,12 +264,14 @@ public class FacDAO extends HibernateDaoSupport{
 
 			//VERIFICO QUE ESTA VOLVIENDO AL POS DESPUES DE ESTAR INACTIVO : I -> U -> A
 			PhpposCustomersEntity customersEntity = getCustomer(peopleEntity.getPersonId());
+			// PREGUNTO SI ESTA EN PEOPLE PERO NO EN CUSTOMER
 			if (customersEntity != null) { // YA EXISTE EL CUSTOMER
 				logger.info("******  YA EXISTE EL CUSTOMER ");
 				customersEntity.setAccountNumber(String.valueOf(funcionario.getFunCedula()));
 				customersEntity.setPass(getMD5(String.valueOf(funcionario.getFunClave())));
 				customersEntity.setLevel_debt(funcionario.getFunEndeudamiento());
 				customersEntity.setDebt(funcionario.getFunConsumoUltimoMes());
+
 				getHibernateTemplate().update(customersEntity);
 			} else { // EL CUSTOMER ESTABA FUERA
 				logger.info("****** EL CUSTOMER ESTABA FUERA");
@@ -302,7 +309,7 @@ public class FacDAO extends HibernateDaoSupport{
        // OBTENGO EL CUSTOMER
         PosFuncEstado posFuncEstado = facOracleDAO.getPosFuncEstado(
                 getIdPos(), funcionario.getFunCedula());
-        if (posFuncEstado.getFesIdFuncionario()!=null) { // DE PRONTO VAYA SIN ID
+        if (posFuncEstado.getFesIdFuncionario()!=null) { // DE PRONTO VAYA SIN ID EN MYSQL
             PhpposCustomersEntity customersEntity = getCustomer(posFuncEstado.getFesIdFuncionario());
 
             if (customersEntity != null) { // YA HA SIDO DESACTIVADO
@@ -343,6 +350,7 @@ public class FacDAO extends HibernateDaoSupport{
 			logger.info("itemOracle.getPcaCantidad() = " + itemOracle.getPcaCantidad());
 			logger.info(" ======================================================= ");
 		} else {
+			// PREGUNTO EN ORACLE SI EL ITEM DE MYSQL EXISTE
 			if (itemOracle.getPcaIdElemento() == null){ // EL ITEM NO EXISTE EN EL POS
 				// CREAR UNO NUEVO
 				PhpposItemsEntity itemPos = new PhpposItemsEntity();
@@ -364,7 +372,7 @@ public class FacDAO extends HibernateDaoSupport{
 				itemOracle.setPcaIdElemento(idItemPos);
 				saveLogEntrada(itemOracle, "N", idPos);
 
-				// JOIN CON LA TABLA FUNCIONARIO DE SINFAD
+				// JOIN CON LA TABLA LISTA PRECIOS DE SINFAD
 
 				itemOracle.setPcaIdElemento(idItemPos);
 				// ACTUALIZO EN CERO (0) EN ORACLE
@@ -401,7 +409,9 @@ public class FacDAO extends HibernateDaoSupport{
      */
     public void updateItem(PosListaPrecio itemOracle,
                            int idPos){
+		// PREGUNTO SI EL ID DEL ITEM VIENE EN NULO
         if (itemOracle.getPcaIdElemento() != null) {
+			//TRAIGO EL ITEM POS SEGUN EL PCIDELEMENTO DE ORACLE
             PhpposItemsEntity itemPos = getItemPos(itemOracle.getPcaIdElemento());
 
 			if (itemPos != null) {
@@ -542,17 +552,20 @@ public class FacDAO extends HibernateDaoSupport{
     }
 
     public void sincronizaArticulos(){
-
+		// TRAIGO EL ID POS
         PhpposAppConfigEntity appConfig = getAppConfig("id_pos");
-        if (appConfig != null){
+        // PREGUNTAR SI EL ID POS ESTA CONFIGURADO
+		if (appConfig != null){
             int idPos = Integer.parseInt(appConfig.getValue());
-			logger.info("idPos = " + idPos);
+			logger.info("****>>> idPos = " + idPos);
+			// TRAIGO LA LISTA DE PRECIOS DE ORACLE
             List<PosListaPrecio> listaPrecios = facOracleDAO.getListaPrecios(idPos);
             logger.info("listaPrecios = " + listaPrecios.size());
             for (PosListaPrecio itemOracle : listaPrecios) {
                 try {
                     char estadoItemOracle = itemOracle.getPcaEstado().toCharArray()[0];
-                    logger.debug("estadoItemOracle = " + estadoItemOracle);
+					logger.info("****>>> itemOracle.getPcaDescripcion() = " + itemOracle.getPcaDescripcion());
+                    logger.debug("****>>> estadoItemOracle = " + estadoItemOracle);
                     switch (estadoItemOracle){
                         case 'N':
                             saveNewItem(itemOracle, idPos);
