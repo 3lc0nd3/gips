@@ -972,4 +972,10 @@ public class FacDAO extends HibernateDaoSupport{
 
         return controlSaldo;
     }
+
+
+
+	public void testTransaction(){
+
+	}
 }

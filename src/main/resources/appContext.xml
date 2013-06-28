@@ -214,6 +214,7 @@
             <dwr:include method="sincronizaArticulos"/>
             <dwr:include method="solicitudes"/>
             <dwr:include method="test"/>
+            <dwr:include method="testTransaction"/>
 
             <dwr:convert class="co.com.lh.smsfin.model.PhpposItemsEntity" type="bean"></dwr:convert>
             <dwr:convert class="co.com.lh.smsfin.model.PhpposPeopleEntity" type="bean"></dwr:convert>
