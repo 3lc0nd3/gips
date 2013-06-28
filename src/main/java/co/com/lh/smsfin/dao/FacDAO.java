@@ -2,6 +2,7 @@ package co.com.lh.smsfin.dao;
 
 import co.com.lh.smsfin.model.*;
 import co.com.lh.smsfin.modelFac.*;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.Session;
@@ -280,7 +281,7 @@ public class FacDAO extends HibernateDaoSupport{
 		} else {
 //			NO ES NULO EL PEOPLE
 			peopleEntity.setFirstName(nombre);
-			peopleEntity.setLastName(funcionario.getFunNombres()==null?"":funcionario.getFunNombres());
+			peopleEntity.setLastName(funcionario.getFunNombres() == null ? "" : funcionario.getFunNombres());
 
 			peopleEntity.setPhoneNumber(" ");
 			peopleEntity.setEmail(" ");
@@ -976,6 +977,26 @@ public class FacDAO extends HibernateDaoSupport{
 
 
 	public void testTransaction(){
+		Session hbSession = getSession();
 
+		Transaction ts = hbSession.beginTransaction();
+
+		PhpposItemsEntity items3 = (PhpposItemsEntity) hbSession.get(PhpposItemsEntity.class, 3);
+		System.out.println("items3.getName() = " + items3.getName());
+		items3.setName( (new java.util.Date()).toString());
+		hbSession.update(items3);
+
+		ts.commit();
+		System.out.println("con comit");
+		hbSession.close();
 	}
 }
+
+
+
+
+
+
+
+
+
