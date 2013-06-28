@@ -448,6 +448,7 @@ public class FacDAO extends HibernateDaoSupport{
             PhpposItemsEntity itemPos = getItemPos(itemOracle.getPcaIdElemento());
 
 			if (itemPos != null) {
+				itemPos.setName(itemOracle.getPcaDescripcion());
 				itemPos.setDescription(itemOracle.getPcaDescripcion());
 				itemPos.setQuantity(itemPos.getQuantity() + itemOracle.getPcaCantidad());
 				itemPos.setCostPrice(itemOracle.getPcaPrecioVenta());
