@@ -447,7 +447,11 @@ public class FacDAO extends HibernateDaoSupport{
 			//TRAIGO EL ITEM POS SEGUN EL PCIDELEMENTO DE ORACLE
             PhpposItemsEntity itemPos = getItemPos(itemOracle.getPcaIdElemento());
 
-			if (itemPos != null) {
+			if (itemPos != null) {  // SI EXISTE EN EL POS
+
+				Session hbSession = getSession();
+				Transaction ts = hbSession.beginTransaction();
+
 				itemPos.setName(itemOracle.getPcaDescripcion());
 				itemPos.setDescription(itemOracle.getPcaDescripcion());
 				itemPos.setQuantity(itemPos.getQuantity() + itemOracle.getPcaCantidad());
@@ -456,14 +460,25 @@ public class FacDAO extends HibernateDaoSupport{
 
 				getHibernateTemplate().update(itemPos);
 
+				boolean success = false;
+
+				try {
+					// ACTUALIZO EN CERO (0) EN ORACLE
+					facOracleDAO.updatePosListaPrecioCeroA(itemOracle); // se usa el facOracleDao
+					success = true;
+				} catch (Exception e) {
+					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				} finally {
+					if (! success) {
+						ts.rollback();
+					} else {
+						ts.commit();
+					}
+				}
+
+
 				// LOG ENTRADAS
 				saveLogEntrada(itemOracle, "U", idPos);
-
-				// ACTUALIZO EN CERO (0) EN ORACLE
-
-				itemOracle.setPcaCantidad(0);
-				itemOracle.setPcaEstado("A");
-				facOracleDAO.getHibernateTemplate().update(itemOracle); // se usa el facOracleDao
 
 
 				logger.info(" ");
@@ -474,15 +489,22 @@ public class FacDAO extends HibernateDaoSupport{
 				logger.info("itemPos.getQuantity() = " + itemPos.getQuantity());
 				logger.info(" ======================================================= ");
 				logger.info(" ");
-			} else {
+			} else {  // NO EXISTE EN EL POS
 				logger.info(" ========  ITEM CON PROBLEMAS DE UPDATE  =============== ");
+				logger.info(" ========  NO EXISTE ITEM EN EL POS CON: =============== ");
 				logger.info("itemOracle.getPcaIdElemento() = " + itemOracle.getPcaIdElemento());
 				logger.info("itemOracle.getPcaDescripcion() = " + itemOracle.getPcaDescripcion());
 				logger.info("itemOracle.getPcaPosId() = " + itemOracle.getPcaPosId());
 				logger.info("idPos = " + idPos);
 				logger.info(" ======================================================= ");
 			}
-
+		} else {
+			logger.info(" ========  ITEM CON getPcaIdElemento NULL  ============= ");
+			logger.info("itemOracle.getPcaIdElemento() = " + itemOracle.getPcaIdElemento());
+			logger.info("itemOracle.getPcaDescripcion() = " + itemOracle.getPcaDescripcion());
+			logger.info("itemOracle.getPcaPosId() = " + itemOracle.getPcaPosId());
+			logger.info("idPos = " + idPos);
+			logger.info(" ======================================================= ");
 		}
     }
 
@@ -987,7 +1009,7 @@ public class FacDAO extends HibernateDaoSupport{
 		items3.setName( (new java.util.Date()).toString());
 		hbSession.update(items3);
 
-		ts.commit();
+//		ts.commit();
 		System.out.println("con comit");
 		hbSession.close();
 	}

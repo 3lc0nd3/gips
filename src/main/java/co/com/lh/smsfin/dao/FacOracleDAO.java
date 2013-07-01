@@ -123,4 +123,26 @@ public class FacOracleDAO extends HibernateDaoSupport {
         }
     }
 
+	public PosListaPrecio updatePosListaPrecioCeroA(final PosListaPrecio itemOracle){
+
+		getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				Query query = session.createQuery(
+						"update PosListaPrecio set pcaCantidad = 0, pcaEstado = 'A'" +
+								" where pcaPosId = ? and pcaIdElemento = ? "
+				);
+				query.setInteger(0, itemOracle.getPcaPosId());
+				query.setInteger(1, itemOracle.getPcaIdElemento());
+				query.executeUpdate();
+				return null;  //To change body of implemented methods use File | Settings | File Templates.
+			}
+		});
+		itemOracle.setPcaCantidad(0);
+		itemOracle.setPcaEstado("A");
+
+		return itemOracle;
+	}
+
+
 }
