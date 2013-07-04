@@ -1,5 +1,6 @@
 <%@ page import="co.com.lh.smsfin.model.PhpposItemsEntity" %>
 <%@ page import="java.util.List" %>
+<%@ page import="co.com.lh.smsfin.model.PhpposAppConfigEntity" %>
 <%--
   Created by IntelliJ IDEA.
   User: edward
@@ -10,12 +11,19 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <jsp:useBean id="posManager" class="co.com.lh.smsfin.dao.FacDAO" scope="application" />
 <%
+
+    int idPos = posManager.getIdPos();
+
+    String nombrePos = posManager.getAppConfig("address").getValue();
+
+
     List<PhpposItemsEntity> items = posManager.getHibernateTemplate().find(
             "from PhpposItemsEntity where quantity > 0 order by name ");
 %>
 <html>
-<head><title>Simple jsp page</title></head>
+<head><title>Pos: <%=idPos%>, <%=nombrePos%> Items </title></head>
 <body>
+<h1>Items en Pos: <%=idPos%>, <%=nombrePos%> </h1>
 <table border="1">
     <tr>
         <th>id</th>
