@@ -255,7 +255,9 @@ public class FacDAO extends HibernateDaoSupport{
                 peopleEntity = getPeopleEntity(posFuncEstado.getFesIdFuncionario());
             } 
         }
+		int idPos = getIdPos();
 		logger.info(" ========  ITEM CLIENTE FUNCIONARIO  =========================== ");
+        logger.info("idPos = " + idPos);
         logger.info("funcionario.getFunCedula() = " + funcionario.getFunCedula());
         logger.info("funcionario.getFunNombres() = " + funcionario.getFunNombres());
         logger.info("funcionario.getFunApellidos() = " + funcionario.getFunApellidos());
@@ -306,6 +308,25 @@ public class FacDAO extends HibernateDaoSupport{
 				customersEntity.setDebt(funcionario.getFunConsumoUltimoMes());
 
 				getHibernateTemplate().update(customersEntity);
+
+				// ACTUALIZAR EN ORACLE EL ID PEOPLE
+
+				PosFuncEstado funcEstado = facOracleDAO.getPosFuncEstado(idPos, funcionario.getFunCedula());
+				if (funcEstado != null) {
+					logger.info(" ====  SE ACTUALIZARA EN ORACLE CON EL PEOPLE ID  ============== ");
+					logger.info(" ====  " + customersEntity.getPersonId() + " ============= ");
+					logger.info(" =============================================================== ");
+					funcEstado.setFesIdFuncionario(customersEntity.getPersonId());
+
+					facOracleDAO.getHibernateTemplate().update(funcEstado);
+				} else {
+					logger.info(" ====  HUBO UN PROBLEMA UBICANDO AL Func_estado  =============== ");
+					logger.info(" ====  cedula: "+  funcionario.getFunCedula()+" ================== ");
+					logger.info(" ====  idpos : "+  idPos+" ================== ");
+					logger.info(" =============================================================== ");
+				}
+
+
 			} else { // EL CUSTOMER ESTABA FUERA
 				logger.info("****** EL CUSTOMER ESTABA FUERA");
 				customersEntity = new PhpposCustomersEntity();
