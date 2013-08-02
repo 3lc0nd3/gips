@@ -140,8 +140,11 @@ public class FacDAO extends HibernateDaoSupport{
     public void saveNewCustomer(final VPosFuncionarios funcionario){
 		//  TOCA MIRAR SI EXISTE EN PEOPLE Y EN CUSTOMERS
 
-		PhpposPeopleEntity peopleEntity = getPeopleEntityFromCedula(funcionario.getFunCedula());
+		Session hbSession = getSession();        // SESSION MYSQL
+		Transaction ts = hbSession.beginTransaction();
+		boolean success = false;
 
+		PhpposPeopleEntity peopleEntity = getPeopleEntityFromCedula(funcionario.getFunCedula());
 
 		if (getPhpposCustomersEntityFromCedula(funcionario.getFunCedula()) == null) { // EL FUNCIONARIO NO EXISTE EN CUSTOMER
 
@@ -169,17 +172,10 @@ public class FacDAO extends HibernateDaoSupport{
 				peopleEntity.setCountry(" ");
 				peopleEntity.setComments(" ");
 
-				// CREO EL PEOPLE EN EL POS
+				// CREO EL PEOPLE EN EL POS MYSQL
 				idPeople1 = (Integer) getHibernateTemplate().save(peopleEntity);
 
-				logger.info("");
-				logger.info(" ===== FUNCIONARIO CREADO ============================== ");
-				logger.info("idPeople = " + idPeople1);
-				logger.info("funcionario.getFunCedula() = " + funcionario.getFunCedula());
-				logger.info("funcionario.getFunNombres() = " + funcionario.getFunNombres());
-				logger.info("funcionario.getFunApellidos() = " + funcionario.getFunApellidos());
-				logger.info(" ======================================================= ");
-				logger.info("");
+
 			} else {
 				idPeople1 = peopleEntity.getPersonId();
 				logger.info("");
@@ -196,22 +192,41 @@ public class FacDAO extends HibernateDaoSupport{
 
             // JOIN CON LA TABLA FUNCIONARIO DE SINFAD
 
-            facOracleDAO.getHibernateTemplate().execute(new HibernateCallback() {
-                public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                    Query query = session.createQuery(
-                            "update PosFuncEstado set fesIdFuncionario = ?, fesEstado = 'A' where fesCedula = ? and fesIdPos = ?"
-                    );
-                    query.setInteger(0, idPeople);
-                    query.setLong(1, funcionario.getFunCedula());
-                    query.setInteger(2, getIdPos());
+			try {
+				facOracleDAO.getHibernateTemplate().execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+						Query query = session.createQuery(
+								"update PosFuncEstado set fesIdFuncionario = ?, fesEstado = 'A' where fesCedula = ? and fesIdPos = ?"
+						);
+						query.setInteger(0, idPeople);
+						query.setLong(1, funcionario.getFunCedula());
+						query.setInteger(2, getIdPos());
 
-                    query.executeUpdate();
-                    return null;  //To change body of implemented methods use File | Settings | File Templates.
-                }
-            });
+						query.executeUpdate();
+						return null;  //To change body of implemented methods use File | Settings | File Templates.
+					}
+				});
+				success = true;
+			} catch (DataAccessException e) {
+				e.printStackTrace();  //
+			} finally {
+				if (success) {
+					ts.commit();
+					logger.info("");
+					logger.info(" ===== FUNCIONARIO CREADO ============================== ");
+					logger.info("idPeople = " + idPeople1);
+					logger.info("funcionario.getFunCedula() = " + funcionario.getFunCedula());
+					logger.info("funcionario.getFunNombres() = " + funcionario.getFunNombres());
+					logger.info("funcionario.getFunApellidos() = " + funcionario.getFunApellidos());
+					logger.info(" ======================================================= ");
+					logger.info("");
+				} else {
+					ts.rollback();
+				}
+			}
 
 
-            // CREO EL CUSTOMER EN EL POS
+			// CREO EL CUSTOMER EN EL POS
 
             PhpposCustomersEntity customersEntity = new PhpposCustomersEntity();
 
@@ -304,8 +319,16 @@ public class FacDAO extends HibernateDaoSupport{
 				logger.info("******  YA EXISTE EL CUSTOMER ");
 				customersEntity.setAccountNumber(String.valueOf(funcionario.getFunCedula()));
 				customersEntity.setPass(getMD5(String.valueOf(funcionario.getFunClave())));
-				customersEntity.setLevel_debt(funcionario.getFunEndeudamiento());
-				customersEntity.setDebt(funcionario.getFunConsumoUltimoMes());
+				if (funcionario.getFunEndeudamiento() !=null) {
+					customersEntity.setLevel_debt(funcionario.getFunEndeudamiento());
+				} else {
+					customersEntity.setLevel_debt(0);
+				}
+				if (funcionario.getFunConsumoUltimoMes()!=null) {
+					customersEntity.setDebt(funcionario.getFunConsumoUltimoMes());
+				} else {
+					customersEntity.setDebt(0);
+				}
 
 				getHibernateTemplate().update(customersEntity);
 
@@ -470,7 +493,7 @@ public class FacDAO extends HibernateDaoSupport{
 
 			if (itemPos != null) {  // SI EXISTE EN EL POS
 
-				Session hbSession = getSession();
+				Session hbSession = getSession();        // SESSION MYSQL
 				Transaction ts = hbSession.beginTransaction();
 
 				itemPos.setName(itemOracle.getPcaDescripcion());
@@ -481,35 +504,36 @@ public class FacDAO extends HibernateDaoSupport{
 
 				getHibernateTemplate().update(itemPos);
 
-				boolean success = false;
+				boolean successMySQL = false;
+				boolean successOracle = false; // se usa el facOracleDao
 
 				try {
 					// ACTUALIZO EN CERO (0) EN ORACLE
-					facOracleDAO.updatePosListaPrecioCeroA(itemOracle); // se usa el facOracleDao
-					success = true;
+					successOracle = facOracleDAO.updatePosListaPrecioCeroA(itemOracle);
+					successMySQL = true;
 				} catch (Exception e) {
-					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+					e.printStackTrace();  //
 				} finally {
-					if (! success) {
-						ts.rollback();
-					} else {
+					if (successMySQL && successOracle) {
 						ts.commit();
+						// LOG ENTRADAS
+						saveLogEntrada(itemOracle, "U", idPos);
+
+						logger.info(" ");
+						logger.info(" ========  ITEM ACTUALIZADO  =========================== ");
+						logger.info("itemPos.getItemId() = " + itemPos.getItemId());
+						logger.info("itemPos.getDescription() = " + itemPos.getDescription());
+						logger.info("itemPos.getUnitPrice() = " + itemPos.getUnitPrice());
+						logger.info("itemPos.getQuantity() = " + itemPos.getQuantity());
+						logger.info(" ======================================================= ");
+						logger.info(" ");
+					} else {
+						ts.rollback();
 					}
 				}
 
 
-				// LOG ENTRADAS
-				saveLogEntrada(itemOracle, "U", idPos);
 
-
-				logger.info(" ");
-				logger.info(" ========  ITEM ACTUALIZADO  =========================== ");
-				logger.info("itemPos.getItemId() = " + itemPos.getItemId());
-				logger.info("itemPos.getDescription() = " + itemPos.getDescription());
-				logger.info("itemPos.getUnitPrice() = " + itemPos.getUnitPrice());
-				logger.info("itemPos.getQuantity() = " + itemPos.getQuantity());
-				logger.info(" ======================================================= ");
-				logger.info(" ");
 			} else {  // NO EXISTE EN EL POS
 				logger.info(" ========  ITEM CON PROBLEMAS DE UPDATE  =============== ");
 				logger.info(" ========  NO EXISTE ITEM EN EL POS CON: =============== ");

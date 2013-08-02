@@ -1,5 +1,6 @@
 package co.com.lh.smsfin.dao;
 
+import org.hibernate.Transaction;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.dao.DataAccessException;
@@ -123,25 +124,38 @@ public class FacOracleDAO extends HibernateDaoSupport {
         }
     }
 
-	public PosListaPrecio updatePosListaPrecioCeroA(final PosListaPrecio itemOracle){
+	public boolean updatePosListaPrecioCeroA(final PosListaPrecio itemOracle){
 
-		getHibernateTemplate().execute(new HibernateCallback() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Query query = session.createQuery(
-						"update PosListaPrecio set pcaCantidad = 0, pcaEstado = 'A'" +
-								" where pcaPosId = ? and pcaIdElemento = ? "
-				);
-				query.setInteger(0, itemOracle.getPcaPosId());
-				query.setInteger(1, itemOracle.getPcaIdElemento());
-				query.executeUpdate();
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+		Session hbSessionOracle = getSession();        // SESSION MYSQL
+		Transaction tsOracle = hbSessionOracle.beginTransaction();
+		boolean successOracle = false;
+
+		try {
+			getHibernateTemplate().execute(new HibernateCallback() {
+				@Override
+				public Object doInHibernate(Session session) throws HibernateException, SQLException {
+					Query query = session.createQuery(
+							"update PosListaPrecio set pcaCantidad = 0, pcaEstado = 'A'" +
+									" where pcaPosId = ? and pcaIdElemento = ? "
+					);
+					query.setInteger(0, itemOracle.getPcaPosId());
+					query.setInteger(1, itemOracle.getPcaIdElemento());
+					query.executeUpdate();
+					return null;  //To change body of implemented methods use File | Settings | File Templates.
+				}
+			});
+			successOracle = true;
+		} catch (DataAccessException e) {
+			e.printStackTrace();  //
+			return false;
+		} finally {
+			if (!successOracle) {
+				tsOracle.rollback();
+			} else {
+				tsOracle.commit();
 			}
-		});
-		itemOracle.setPcaCantidad(0);
-		itemOracle.setPcaEstado("A");
-
-		return itemOracle;
+		}
+		return successOracle;
 	}
 
 
