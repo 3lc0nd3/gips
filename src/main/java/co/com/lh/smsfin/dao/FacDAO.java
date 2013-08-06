@@ -252,6 +252,7 @@ public class FacDAO extends HibernateDaoSupport{
 			getHibernateTemplate().save(customersEntity);
 
         }  // END IF EXISTE FUNCIONARIO EN POS
+		hbSession.close();
     }
 
 	/**
@@ -531,9 +532,7 @@ public class FacDAO extends HibernateDaoSupport{
 						ts.rollback();
 					}
 				}
-
-
-
+				hbSession.close();
 			} else {  // NO EXISTE EN EL POS
 				logger.info(" ========  ITEM CON PROBLEMAS DE UPDATE  =============== ");
 				logger.info(" ========  NO EXISTE ITEM EN EL POS CON: =============== ");
