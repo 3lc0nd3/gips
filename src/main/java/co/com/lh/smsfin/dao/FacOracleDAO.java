@@ -161,6 +161,4 @@ public class FacOracleDAO extends HibernateDaoSupport {
 		}
 		return successOracle;
 	}
-
-
 }
