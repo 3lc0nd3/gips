@@ -94,7 +94,7 @@ public class FacOracleDAO extends HibernateDaoSupport {
      * @return lista segun vista
      */
     public List<VPosFuncionarios> getVPosFuncionarios(int posID){
-        return getHibernateTemplate().find("from VPosFuncionarios where fesIdPos = ?", posID);
+        return getHibernateTemplate().find("from VPosFuncionarios where fesIdPos = ? and fesEstado <> 'A' ", posID);
     }
 
     /**
@@ -104,7 +104,7 @@ public class FacOracleDAO extends HibernateDaoSupport {
      */
     public List<PosListaPrecio> getListaPrecios(int posID){
 		logger.info("posID = " + posID);
-        return getHibernateTemplate().find("from PosListaPrecio where pcaPosId = ?", posID);
+        return getHibernateTemplate().find("from PosListaPrecio where pcaPosId = ? and pcaEstado <> 'A'", posID);
     }
 
     /**
@@ -151,8 +151,12 @@ public class FacOracleDAO extends HibernateDaoSupport {
 		} finally {
 			if (!successOracle) {
 				tsOracle.rollback();
+				hbSessionOracle.flush();
+				hbSessionOracle.close();
 			} else {
 				tsOracle.commit();
+				hbSessionOracle.flush();
+				hbSessionOracle.close();
 			}
 		}
 		return successOracle;

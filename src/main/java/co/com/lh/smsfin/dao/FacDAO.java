@@ -212,6 +212,8 @@ public class FacDAO extends HibernateDaoSupport{
 			} finally {
 				if (success) {
 					ts.commit();
+					hbSession.flush();
+					hbSession.close();
 					logger.info("");
 					logger.info(" ===== FUNCIONARIO CREADO ============================== ");
 					logger.info("idPeople = " + idPeople1);
@@ -222,6 +224,8 @@ public class FacDAO extends HibernateDaoSupport{
 					logger.info("");
 				} else {
 					ts.rollback();
+					hbSession.flush();
+					hbSession.close();
 				}
 			}
 
@@ -252,7 +256,6 @@ public class FacDAO extends HibernateDaoSupport{
 			getHibernateTemplate().save(customersEntity);
 
         }  // END IF EXISTE FUNCIONARIO EN POS
-		hbSession.close();
     }
 
 	/**
@@ -517,6 +520,8 @@ public class FacDAO extends HibernateDaoSupport{
 				} finally {
 					if (successMySQL && successOracle) {
 						ts.commit();
+						hbSession.flush();
+						hbSession.close();
 						// LOG ENTRADAS
 						saveLogEntrada(itemOracle, "U", idPos);
 
@@ -530,9 +535,10 @@ public class FacDAO extends HibernateDaoSupport{
 						logger.info(" ");
 					} else {
 						ts.rollback();
+						hbSession.flush();
+						hbSession.close();
 					}
 				}
-				hbSession.close();
 			} else {  // NO EXISTE EN EL POS
 				logger.info(" ========  ITEM CON PROBLEMAS DE UPDATE  =============== ");
 				logger.info(" ========  NO EXISTE ITEM EN EL POS CON: =============== ");
@@ -678,8 +684,7 @@ public class FacDAO extends HibernateDaoSupport{
             for (PosListaPrecio itemOracle : listaPrecios) {
                 try {
                     char estadoItemOracle = itemOracle.getPcaEstado().toCharArray()[0];
-					logger.info("****>>> itemOracle.getPcaDescripcion() = " + itemOracle.getPcaDescripcion());
-                    logger.debug("****>>> estadoItemOracle = " + estadoItemOracle);
+					logger.info("****>>> itemOracle.getPcaDescripcion() = " + itemOracle.getPcaDescripcion()+"\t****>>> estadoItemOracle = " + estadoItemOracle);
                     switch (estadoItemOracle){
                         case 'N':
                             saveNewItem(itemOracle, idPos);
@@ -1053,7 +1058,7 @@ public class FacDAO extends HibernateDaoSupport{
 		items3.setName( (new java.util.Date()).toString());
 		hbSession.update(items3);
 
-//		ts.commit();
+		ts.commit();
 		System.out.println("con comit");
 		hbSession.close();
 	}
