@@ -50,6 +50,7 @@ public class FacDAO extends HibernateDaoSupport{
                 return null;
             }
         });
+        getHibernateTemplate().flush();
     }
 
     /**
@@ -140,13 +141,16 @@ public class FacDAO extends HibernateDaoSupport{
     public void saveNewCustomer(final VPosFuncionarios funcionario){
 		//  TOCA MIRAR SI EXISTE EN PEOPLE Y EN CUSTOMERS
 
+        PhpposPeopleEntity peopleEntity = getPeopleEntityFromCedula(funcionario.getFunCedula());
+        PhpposPeopleEntity phpposCustomersEntityFromCedula = getPhpposCustomersEntityFromCedula(funcionario.getFunCedula());
+        getHibernateTemplate().flush();
+
 		Session hbSession = getSession();        // SESSION MYSQL
 		Transaction ts = hbSession.beginTransaction();
 		boolean success = false;
 
-		PhpposPeopleEntity peopleEntity = getPeopleEntityFromCedula(funcionario.getFunCedula());
 
-		if (getPhpposCustomersEntityFromCedula(funcionario.getFunCedula()) == null) { // EL FUNCIONARIO NO EXISTE EN CUSTOMER
+        if (phpposCustomersEntityFromCedula == null) { // EL FUNCIONARIO NO EXISTE EN CUSTOMER
 
 			Integer idPeople1;
 			// PREGUNTO SI EXISTE EN PEOPLE
@@ -254,6 +258,7 @@ public class FacDAO extends HibernateDaoSupport{
 			}
 
 			getHibernateTemplate().save(customersEntity);
+            getHibernateTemplate().flush();
 
         }  // END IF EXISTE FUNCIONARIO EN POS
     }
@@ -315,6 +320,7 @@ public class FacDAO extends HibernateDaoSupport{
 			peopleEntity.setComments(" ");
 
 			getHibernateTemplate().update(peopleEntity);
+            getHibernateTemplate().flush();
 
 			//VERIFICO QUE ESTA VOLVIENDO AL POS DESPUES DE ESTAR INACTIVO : I -> U -> A
 			PhpposCustomersEntity customersEntity = getCustomer(peopleEntity.getPersonId());
@@ -335,6 +341,7 @@ public class FacDAO extends HibernateDaoSupport{
 				}
 
 				getHibernateTemplate().update(customersEntity);
+                getHibernateTemplate().flush();
 
 				// ACTUALIZAR EN ORACLE EL ID PEOPLE
 
@@ -346,6 +353,7 @@ public class FacDAO extends HibernateDaoSupport{
 					funcEstado.setFesIdFuncionario(customersEntity.getPersonId());
 
 					facOracleDAO.getHibernateTemplate().update(funcEstado);
+                    getHibernateTemplate().flush();
 				} else {
 					logger.info(" ====  HUBO UN PROBLEMA UBICANDO AL Func_estado  =============== ");
 					logger.info(" ====  cedula: "+  funcionario.getFunCedula()+" ================== ");
@@ -363,6 +371,7 @@ public class FacDAO extends HibernateDaoSupport{
 				customersEntity.setTaxable(0);
 
 				getHibernateTemplate().save(customersEntity);
+                getHibernateTemplate().flush();
 			}
 
 			// ACTUALIZA LA TABLA FUNCIONARIO DE SINFAD
@@ -370,6 +379,7 @@ public class FacDAO extends HibernateDaoSupport{
 					getIdPos(), funcionario.getFunCedula());
 			posFuncEstado.setFesEstado("A");
 			facOracleDAO.getHibernateTemplate().update(posFuncEstado); // se usa el facOracleDao
+            getHibernateTemplate().flush();
 
 			logger.info(" ===== FUNCIONARIO ACTUALIZADO   ======================= ");
 			logger.info("peopleEntity.getPersonId() = " + peopleEntity.getPersonId());
@@ -395,6 +405,7 @@ public class FacDAO extends HibernateDaoSupport{
 
             if (customersEntity != null) { // YA HA SIDO DESACTIVADO
                 getHibernateTemplate().delete(customersEntity);
+                getHibernateTemplate().flush();
 
                 logger.info(" ===== FUNCIONARIO INACTIVADO    ======================= ");
                 logger.info("funcionario.getFunId() = " + posFuncEstado.getFesIdFuncionario());
@@ -407,6 +418,7 @@ public class FacDAO extends HibernateDaoSupport{
 
         posFuncEstado.setFesEstado("I");
         facOracleDAO.getHibernateTemplate().update(posFuncEstado); // se usa el facOracleDao
+        getHibernateTemplate().flush();
     }
 
     /**
@@ -447,6 +459,7 @@ public class FacDAO extends HibernateDaoSupport{
 				itemPos.setReorderLevel(1);
 
 				Integer idItemPos = (Integer) getHibernateTemplate().save(itemPos);
+                getHibernateTemplate().flush();
 
 				// LOG ENTRADAS
 
@@ -460,6 +473,7 @@ public class FacDAO extends HibernateDaoSupport{
 				itemOracle.setPcaCantidad(0);
 				itemOracle.setPcaEstado("A");
 				facOracleDAO.getHibernateTemplate().update(itemOracle); // se usa el facOracleDao
+                getHibernateTemplate().flush();
 
 				// CREAR EL IMPUESTO - INICIALMENTE CERO( 0 )
 
@@ -470,6 +484,7 @@ public class FacDAO extends HibernateDaoSupport{
 				taxesItemPos.setPercent(0);
 
 				getHibernateTemplate().save(taxesItemPos);
+                getHibernateTemplate().flush();
 
 				logger.info(" ");
 				logger.info(" ========  ITEM CREADO  =============================== ");
@@ -660,6 +675,7 @@ public class FacDAO extends HibernateDaoSupport{
 			logEntrada.setHora(Integer.parseInt(h.format(new java.util.Date())));
 			logEntrada.setCantidad(itemOracle.getPcaCantidad());
 			getHibernateTemplate().save(logEntrada);
+            getHibernateTemplate().flush();
 		} catch (NumberFormatException e) {
 			e.printStackTrace();  
 		} catch (DataAccessException e) {
@@ -770,11 +786,13 @@ public class FacDAO extends HibernateDaoSupport{
                 movimientoOracle.setPrpFecmod(new Date(System.currentTimeMillis()));
 
                 facOracleDAO.getHibernateTemplate().save(movimientoOracle);
+                getHibernateTemplate().flush();
 
 
                 // ACTUALIZO EL POS
                 movimientoPos.setEstadoMovimiento("A");
                 getHibernateTemplate().update(movimientoPos);
+                getHibernateTemplate().flush();
 
             }
 
@@ -927,6 +945,7 @@ public class FacDAO extends HibernateDaoSupport{
                             PosControlSaldos controlSaldo =
                                     getPosControlSaldosFromPosItem(item, solicitud.getIdSolicitud());
                             facOracleDAO.getHibernateTemplate().save(controlSaldo);
+                            getHibernateTemplate().flush();
                         } catch (DataAccessException e) {
                             e.printStackTrace();
                         }
@@ -938,6 +957,7 @@ public class FacDAO extends HibernateDaoSupport{
                                 solicitud.getIdSolicitud()
                         );
                         facOracleDAO.getHibernateTemplate().save(controlSaldo);
+                        getHibernateTemplate().flush();
                     } catch (DataAccessException e) {
                         e.printStackTrace();
                     }
@@ -966,6 +986,7 @@ public class FacDAO extends HibernateDaoSupport{
                                             solicitud
                                     );
 							facOracleDAO.getHibernateTemplate().save(transaccion);
+                            getHibernateTemplate().flush();
                         } catch (DataAccessException e) {
                             e.printStackTrace();
                         }
@@ -989,6 +1010,7 @@ public class FacDAO extends HibernateDaoSupport{
                     oracleLogEntrada.setTipo(logEntrada.getTipo());
                     oracleLogEntrada.setIdSolicitud(solicitud.getIdSolicitud());
                     facOracleDAO.getHibernateTemplate().save(oracleLogEntrada);
+                    getHibernateTemplate().flush();
                 }
 
             }

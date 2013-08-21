@@ -41,6 +41,7 @@ public class FacOracleDAO extends HibernateDaoSupport {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
         });
+        getHibernateTemplate().flush();
     }
 	
 	public void solicitudRealizada(final int idSolicitud){
@@ -53,6 +54,7 @@ public class FacOracleDAO extends HibernateDaoSupport {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
         });
+        getHibernateTemplate().flush();
 	}
 	
 
@@ -159,6 +161,7 @@ public class FacOracleDAO extends HibernateDaoSupport {
 				hbSessionOracle.close();
 			}
 		}
+        getHibernateTemplate().flush();
 		return successOracle;
 	}
 }
