@@ -96,7 +96,7 @@ public class FacOracleDAO extends HibernateDaoSupport {
      * @return lista segun vista
      */
     public List<VPosFuncionarios> getVPosFuncionarios(int posID){
-        return getHibernateTemplate().find("from VPosFuncionarios where fesIdPos = ? and fesEstado <> 'A' ", posID);
+        return getHibernateTemplate().find("from VPosFuncionarios where fesIdPos = ? and fesEstado <> 'A'  and fesEstado <> 'X' ", posID);
     }
 
     /**

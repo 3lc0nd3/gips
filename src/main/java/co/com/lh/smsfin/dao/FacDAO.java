@@ -142,7 +142,7 @@ public class FacDAO extends HibernateDaoSupport{
 		//  TOCA MIRAR SI EXISTE EN PEOPLE Y EN CUSTOMERS
 
         PhpposPeopleEntity peopleEntity = getPeopleEntityFromCedula(funcionario.getFunCedula());
-        PhpposPeopleEntity phpposCustomersEntityFromCedula = getPhpposCustomersEntityFromCedula(funcionario.getFunCedula());
+        final PhpposPeopleEntity phpposCustomersEntityFromCedula = getPhpposCustomersEntityFromCedula(funcionario.getFunCedula());
         getHibernateTemplate().flush();
 
 		Session hbSession = getSession();        // SESSION MYSQL
@@ -180,7 +180,7 @@ public class FacDAO extends HibernateDaoSupport{
 				idPeople1 = (Integer) getHibernateTemplate().save(peopleEntity);
 
 
-			} else {
+			} else {  // EL PEOPLE SI EXISTIA
 				idPeople1 = peopleEntity.getPersonId();
 				logger.info("");
 				logger.info(" ===== FUNCIONARIO YA EXISTIA  ========================= ");
@@ -193,6 +193,31 @@ public class FacDAO extends HibernateDaoSupport{
 			}
 
 			final Integer idPeople = idPeople1;
+
+
+			// CREO EL CUSTOMER EN EL POS
+
+			PhpposCustomersEntity customersEntity = new PhpposCustomersEntity();
+
+			customersEntity.setPersonId(idPeople);
+			customersEntity.setTaxable(0);
+			customersEntity.setAccountNumber(String.valueOf(funcionario.getFunCedula()));
+			if (funcionario.getFunClave() != null && !funcionario.getFunClave().equals("")) {
+				customersEntity.setPass(getMD5(String.valueOf(funcionario.getFunClave())));
+			} else {
+				customersEntity.setPass("");
+			}
+			if (funcionario.getFunEndeudamiento()!=null) {
+				customersEntity.setLevel_debt(funcionario.getFunEndeudamiento());
+			} else {
+				customersEntity.setLevel_debt(0);
+			}
+			if (funcionario.getFunConsumoUltimoMes() != null) {
+				customersEntity.setDebt(funcionario.getFunConsumoUltimoMes());
+			} else {
+				customersEntity.setDebt(0);
+			}
+			getHibernateTemplate().save(customersEntity);
 
             // JOIN CON LA TABLA FUNCIONARIO DE SINFAD
 
@@ -210,9 +235,11 @@ public class FacDAO extends HibernateDaoSupport{
 						return null;  //To change body of implemented methods use File | Settings | File Templates.
 					}
 				});
+				facOracleDAO.getHibernateTemplate().flush();
 				success = true;
 			} catch (DataAccessException e) {
 				e.printStackTrace();  //
+				success = false;
 			} finally {
 				if (success) {
 					ts.commit();
@@ -232,35 +259,48 @@ public class FacDAO extends HibernateDaoSupport{
 					hbSession.close();
 				}
 			}
+//            getHibernateTemplate().flush();
 
+        } else {  // END IF EXISTE FUNCIONARIO EN POS
+			facOracleDAO.getHibernateTemplate().execute(new HibernateCallback() {
+				public Object doInHibernate(Session session) throws HibernateException, SQLException {
+					Query query = session.createQuery(
+							"update PosFuncEstado set fesIdFuncionario = ?, fesEstado = 'A' where fesCedula = ? and fesIdPos = ?"
+					);
+					query.setInteger(0, phpposCustomersEntityFromCedula.getPersonId());
+					query.setLong(1, funcionario.getFunCedula());
+					query.setInteger(2, getIdPos());
 
-			// CREO EL CUSTOMER EN EL POS
+					query.executeUpdate();
+					return null;  //To change body of implemented methods use File | Settings | File Templates.
+				}
+			});
+			facOracleDAO.getHibernateTemplate().flush();
 
-            PhpposCustomersEntity customersEntity = new PhpposCustomersEntity();
+			logger.info("");
+			logger.info(" ======================================================= ");
+			logger.info(" ====  YA EXISTE EL CUSTOMER EN EL POS ================= ");
+			logger.info(" ======================================================= ");
+			logger.info("funcionario.getFunCedula() = " + funcionario.getFunCedula());
+			logger.info("funcionario.getFunNombres() = " + funcionario.getFunNombres());
+			logger.info("funcionario.getFunApellidos() = " + funcionario.getFunApellidos());
+			logger.info("funcionario.getFesEstado() = " + funcionario.getFesEstado());
+			logger.info(" ======================================================= ");
+			logger.info(" ====  LO PASARE A ESTADO A   ========================== ");
+			logger.info(" ======================================================= ");
 
-            customersEntity.setPersonId(idPeople);
-            customersEntity.setTaxable(0);
-            customersEntity.setAccountNumber(String.valueOf(funcionario.getFunCedula()));
-			if (funcionario.getFunClave() != null && !funcionario.getFunClave().equals("")) {
-				customersEntity.setPass(getMD5(String.valueOf(funcionario.getFunClave())));
-			} else {
-				customersEntity.setPass("");
+			// CIERRO LA FUCK TRANSACTION
+
+			try {
+				ts.commit();
+				hbSession.flush();
+				hbSession.close();
+			} catch (HibernateException e) {
+				e.printStackTrace();  //
 			}
-			if (funcionario.getFunEndeudamiento()!=null) {
-				customersEntity.setLevel_debt(funcionario.getFunEndeudamiento());
-			} else {
-				customersEntity.setLevel_debt(0);
-			}
-			if (funcionario.getFunConsumoUltimoMes() != null) {
-				customersEntity.setDebt(funcionario.getFunConsumoUltimoMes());
-			} else {
-				customersEntity.setDebt(0);
-			}
 
-			getHibernateTemplate().save(customersEntity);
-            getHibernateTemplate().flush();
 
-        }  // END IF EXISTE FUNCIONARIO EN POS
+		}
     }
 
 	/**
@@ -601,8 +641,8 @@ public class FacDAO extends HibernateDaoSupport{
             for(VPosFuncionarios funcionario: vPosFuncionarios){
                 try {
                     char c = funcionario.getFesEstado().toCharArray()[0];
-                    logger.debug("c = " + c);
-                    switch (c){
+                    logger.info("c = " + c+"\tfuncionario: " + funcionario.getFunNombres()+" " + funcionario.getFunApellidos());
+					switch (c){
                         case 'N':
                             saveNewCustomer(funcionario);
                             break;
