@@ -6,7 +6,7 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="org.hibernate.classic.Session" %>
 <%--
-  Created by IntelliJ IDEA.
+  Created.
   User: edward
   Date: 22/06/2012
   Time: 09:29:08 AM
