@@ -40,8 +40,9 @@
     }
 %>
 <html>
-<script type='text/javascript' src='dwr/interface/posRemoto.js'></script>
-<script type='text/javascript' src='dwr/engine.js'></script>
+<script type='text/javascript' src='/giposSync/dwr/interface/posRemoto.js'></script>
+<script type='text/javascript' src='/giposSync/dwr/engine.js'></script>
+<script type='text/javascript' src='/giposSync/dwr/util.js'></script>
 <head><title>Sincronizar Pos: <%=idPos%>, <%=nombrePos%> Sincronizar </title></head>
 <body>
 <h1>Sincronizar Manual<br>Pos: <%=idPos%>, <%=nombrePos%> </h1>
@@ -52,10 +53,35 @@
 
 <script type="text/javascript">
 
-    function syncManual(){
-        posRemoto.sincronizaTodo(function(data){
 
+
+    function syncManual(){
+        botonEnProceso("bSync");
+        posRemoto.sincronizaTodo(function(data){
+//            alert(data);
+            botonOperativo();
+            if(data==1){
+                alert("Sincronizo Bien");
+            } else {
+                alert("Problema en la Sincronizacion");
+            }
         });
+    }
+
+
+    function botonEnProceso(idBoton){
+        var bTmp = dwr.util.byId(idBoton);
+        window["botonEnProcesoId"] = idBoton;
+        window["botonEnProcesoValueOld"] = bTmp.value;
+        bTmp.value = "Procesando";
+        bTmp.disabled = true;
+    }
+
+    function botonOperativo(){
+        var bTmp = dwr.util.byId(window["botonEnProcesoId"]);
+//    alrt("bTmp = " + bTmp);
+        bTmp.value = window["botonEnProcesoValueOld"];
+        bTmp.disabled = false;
     }
 </script>
 </body></html>

@@ -616,20 +616,22 @@ public class FacDAO extends HibernateDaoSupport{
     /**
      * Servicio de sincronizacion llamado por el CRON
      */
-    public void sincronizaTodo(){
-//        logger.info(" ========  ITEM ACTUALIZADO  =========================== ");
-        System.out.println(" ===============  CLIENTES  ========================================== ");
-        logger.info(" ======================================================= ");
-        sincronizaClientes();
-        System.out.println(" ===============  ARTICULOS  ========================================= ");
-        sincronizaArticulos();
-        System.out.println(" ===============  VENTAS  ============================================ ");
-        sincronizaVentas();
-        System.out.println(" ===============  SOLICITUDES  ======================================= ");
+    public int sincronizaTodo(){
         try {
+//        logger.info(" ========  ITEM ACTUALIZADO  =========================== ");
+            System.out.println(" ===============  CLIENTES  ========================================== ");
+            logger.info(" ======================================================= ");
+            sincronizaClientes();
+            System.out.println(" ===============  ARTICULOS  ========================================= ");
+            sincronizaArticulos();
+            System.out.println(" ===============  VENTAS  ============================================ ");
+            sincronizaVentas();
+            System.out.println(" ===============  SOLICITUDES  ======================================= ");
             solicitudes();
+            return 1;
         } catch (Exception e) {
             e.printStackTrace();
+            return 0;
         }
     }
 

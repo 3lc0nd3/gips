@@ -212,6 +212,7 @@
             <dwr:include method="sincronizaClientes"/>
             <dwr:include method="sincronizaVentas"/>
             <dwr:include method="sincronizaArticulos"/>
+            <dwr:include method="sincronizaTodo"/>
             <dwr:include method="solicitudes"/>
             <dwr:include method="test"/>
             <dwr:include method="testTransaction"/>
