@@ -614,6 +614,77 @@ public class FacDAO extends HibernateDaoSupport{
     }
 
     /**
+     * Pone 0 en el campo Active para inactivar el Item
+     * @param itemOracle
+     * @param idPos
+     */
+    public void inactivaItem(PosListaPrecio itemOracle,
+                             int idPos){
+        // PREGUNTO SI EL ID DEL ITEM VIENE EN NULO
+        if (itemOracle.getPcaIdElemento() != null) {
+            //TRAIGO EL ITEM POS SEGUN EL PCIDELEMENTO DE ORACLE
+            PhpposItemsEntity itemPos = getItemPos(itemOracle.getPcaIdElemento());
+
+            if (itemPos != null) {  // SI EXISTE EN EL POS
+                Session hbSession = getSession();        // SESSION MYSQL
+                Transaction ts = hbSession.beginTransaction();
+
+                // Inactivo
+                itemPos.setActive(0);
+                getHibernateTemplate().update(itemPos);
+
+                boolean successMySQL = false;
+                boolean successOracle = false; // se usa el facOracleDao
+
+                try {
+                    // ACTUALIZO PcaEstado en D EN ORACLE
+                    successOracle = facOracleDAO.updatePosListaPrecioDisable(itemOracle);
+                    successMySQL = true;
+                } catch (Exception e) {
+                    e.printStackTrace();  //
+                } finally {
+                    if (successMySQL && successOracle) {
+                        ts.commit();
+                        hbSession.flush();
+                        hbSession.close();
+                        // LOG ENTRADAS
+                        saveLogEntrada(itemOracle, "I", idPos);
+
+                        logger.info(" ");
+                        logger.info(" ========  ITEM DESACTIVADO  =========================== ");
+                        logger.info("itemPos.getItemId() = " + itemPos.getItemId());
+                        logger.info("itemPos.getDescription() = " + itemPos.getDescription());
+                        logger.info("itemPos.getUnitPrice() = " + itemPos.getUnitPrice());
+                        logger.info("itemPos.getQuantity() = " + itemPos.getQuantity());
+                        logger.info("itemPos.getActive() = " + itemPos.getActive());
+                        logger.info(" ======================================================= ");
+                        logger.info(" ");
+                    } else {
+                        ts.rollback();
+                        hbSession.flush();
+                        hbSession.close();
+                    }
+                }  //  END FINALLY
+            } else {  // NO EXISTE EN EL POS
+                logger.info(" ========  ITEM CON PROBLEMAS DE INACTIVATE  =============== ");
+                logger.info(" ========  NO EXISTE ITEM EN EL POS CON:     =============== ");
+                logger.info("itemOracle.getPcaIdElemento() = " + itemOracle.getPcaIdElemento());
+                logger.info("itemOracle.getPcaDescripcion() = " + itemOracle.getPcaDescripcion());
+                logger.info("itemOracle.getPcaPosId() = " + itemOracle.getPcaPosId());
+                logger.info("idPos = " + idPos);
+                logger.info(" ======================================================= ");
+            }
+        } else {
+            logger.info(" ========  ITEM A DESACTIVAR CON getPcaIdElemento NULL  ============= ");
+            logger.info("itemOracle.getPcaIdElemento() = " + itemOracle.getPcaIdElemento());
+            logger.info("itemOracle.getPcaDescripcion() = " + itemOracle.getPcaDescripcion());
+            logger.info("itemOracle.getPcaPosId() = " + itemOracle.getPcaPosId());
+            logger.info("idPos = " + idPos);
+            logger.info(" ======================================================= ");
+        }
+    }
+
+    /**
      * Servicio de sincronizacion llamado por el CRON
      */
     public int sincronizaTodo(){
@@ -750,7 +821,9 @@ public class FacDAO extends HibernateDaoSupport{
                         case 'U':
                             updateItem(itemOracle, idPos);
                             break;
-                    
+                        case 'I':
+                            inactivaItem(itemOracle, idPos);
+                            break;
                     }
                 } catch (DataAccessException e){
                     logger.info("e.getMessage() = " + e.getMessage());

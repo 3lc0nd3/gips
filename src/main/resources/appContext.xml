@@ -90,14 +90,14 @@
     <bean id="factoryOracle" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
         <property name="hibernateProperties">
             <props>
-                <prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>
+                <!--<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>
                 <prop key="hibernate.connection.url">jdbc:oracle:thin:@192.168.0.4:1521:ora10</prop>
                 <prop key="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</prop>
                 <prop key="hibernate.default_schema">AMODELO</prop>
                 <prop key="hibernate.connection.username">AMODELO</prop>
                 <prop key="hibernate.connection.password">AMODELO</prop>
 
-                <!--<prop key="hibernate.show_sql">true</prop>-->
+                &lt;!&ndash;<prop key="hibernate.show_sql">true</prop>&ndash;&gt;
                 <prop key="hibernate.show_sql">false</prop>
 
                 <prop key="hibernate.connection.autocommit">true</prop>
@@ -107,7 +107,7 @@
                 <prop key="hibernate.c3p0.min_size">1</prop>
                 <prop key="hibernate.c3p0.max_size">10</prop>
                 <prop key="hibernate.c3p0.timeout">1</prop>
-                <prop key="hibernate.c3p0.max_statements">100</prop>
+                <prop key="hibernate.c3p0.max_statements">100</prop>-->
 
             </props>
         </property>

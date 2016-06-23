@@ -164,4 +164,48 @@ public class FacOracleDAO extends HibernateDaoSupport {
         getHibernateTemplate().flush();
 		return successOracle;
 	}
+
+    /**
+     * Una vez inactive un item se pone en Oracle el PcaEstado en D
+     * @param itemOracle
+     * @return
+     */
+    public boolean updatePosListaPrecioDisable(final PosListaPrecio itemOracle){
+
+        Session hbSessionOracle = getSession();        // SESSION ORACLE
+		Transaction tsOracle = hbSessionOracle.beginTransaction();
+		boolean successOracle = false;
+
+		try {
+			getHibernateTemplate().execute(new HibernateCallback() {
+				@Override
+				public Object doInHibernate(Session session) throws HibernateException, SQLException {
+					Query query = session.createQuery(
+							"update PosListaPrecio set pcaEstado = 'D'" +
+									" where pcaPosId = ? and pcaIdElemento = ? "
+					);
+					query.setInteger(0, itemOracle.getPcaPosId());
+					query.setInteger(1, itemOracle.getPcaIdElemento());
+					query.executeUpdate();
+					return null;  //To change body of implemented methods use File | Settings | File Templates.
+				}
+			});
+			successOracle = true;
+		} catch (DataAccessException e) {
+			e.printStackTrace();  //
+			return false;
+		} finally {
+			if (!successOracle) {
+				tsOracle.rollback();
+				hbSessionOracle.flush();
+				hbSessionOracle.close();
+			} else {
+				tsOracle.commit();
+				hbSessionOracle.flush();
+				hbSessionOracle.close();
+			}
+		}
+        getHibernateTemplate().flush();
+		return successOracle;
+	}
 }
