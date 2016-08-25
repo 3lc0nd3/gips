@@ -497,6 +497,7 @@ public class FacDAO extends HibernateDaoSupport{
 				itemPos.setUnitPrice(itemOracle.getPcaPrecioVenta());
 				itemPos.setQuantity(itemOracle.getPcaCantidad());
 				itemPos.setReorderLevel(1);
+				itemPos.setActive(1);
 
 				Integer idItemPos = (Integer) getHibernateTemplate().save(itemPos);
                 getHibernateTemplate().flush();
